@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 contract ZeroProof {
-
+    event Transfer(address from, address to, uint amount);
     mapping(address => Approver) public approvers;
     uint public approversCount;
 
@@ -50,6 +50,7 @@ contract ZeroProof {
         }
         transferTo(to, amount);
         approvers[msg.sender].nonce += 1;   
+        emit Transfer(address(msg.sender), to, amount);
     }
 
 

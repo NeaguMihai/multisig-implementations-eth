@@ -11,8 +11,10 @@ const generateWallets = (count) => {
 } 
 
 const main = async () => {
-  generateWallets(1);
-  const data = JSON.parse(readFileSync('./artifacts/ZeroProof.json', 'utf8'));  
+  const args = process.argv.slice(2);
+  const address = args[0];
+  generateWallets(+address);
+  const data = JSON.parse(readFileSync('../artifacts/ZeroProof.json', 'utf8'));  
   const addresses = ['0xE803e8079531Fd53D2DCAd1cc1ef483195863f53', ...wallets.map((wallet) => wallet.address)];
   const bytecode = data.data.bytecode;
   const cf = new ethers.ContractFactory(data.abi, bytecode.object, provider.getSigner(0));
@@ -25,7 +27,7 @@ const main = async () => {
   await approvers.wait();
 
   const gasPrice = ethers.BigNumber.from('14').mul(ethers.BigNumber.from('10').pow(9));
-  console.log('Deploy Cost: ', gasPrice.mul(receipt.cumulativeGasUsed)
+  console.log('\n\n\nDeploy Cost: ', gasPrice.mul(receipt.cumulativeGasUsed)
   .toString()
   .split('')
   .reverse()
@@ -37,8 +39,8 @@ const main = async () => {
   } ,'')
   .split('')
   .reverse()
-  .join(''));
-  console.log('GAS ', receipt.cumulativeGasUsed.toString());
+  .join(''), );
+  console.log('GAS ', receipt.cumulativeGasUsed.toString(),'\n\n\n\n\n');
   const resTx = await contract.getTransferTransaction('0xbCF285a2342ACa6BC601b72F9De5AAe7d561040d', '0xE803e8079531Fd53D2DCAd1cc1ef483195863f53', parseUnits('0.01', 'ether'));
   const sigs = [];
   for(let i = 0; i < wallets.length; i++) {
@@ -61,6 +63,7 @@ const main = async () => {
   .split('')
   .reverse()
   .join(''));
+  console.log('GAS ', txRes.cumulativeGasUsed.toString(), '\n\n\n\n\n');
   
   // const c = await contract.transferFromContract('0xE803e8079531Fd53D2DCAd1cc1ef483195863f53', 10000, signature);
   // console.log(await c);

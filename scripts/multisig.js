@@ -1,11 +1,12 @@
 const { ethers } = require("ethers");
 const { parseUnits } = require("ethers/lib/utils");
 const { readFileSync } = require("fs");
-
+const data = {
+  deploy: [],
+  total: [],
+}
 const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:7545');
-const main = async () => {
-  const args = process.argv.slice(2);
-  const address = args[0];
+const main = async (address) => {
   const addressArray = [];
   for(let i = 0; i < +address; i++) {
     addressArray.push(provider.getSigner(i));
@@ -23,7 +24,7 @@ const main = async () => {
   await approvers.wait();
   const init = await contract.initiateTransfer(parseUnits('0.00001', 'ether'), '0x9D83e6818BCCB6c5992712de7131082ff74a1C25');
   const res = await init.wait();
-  const gasPrice = ethers.BigNumber.from('14').mul(ethers.BigNumber.from('10').pow(9));
+  const gasPrice = ethers.BigNumber.from('14');
   console.log('Deploy Cost: ', gasPrice.mul(receipt.cumulativeGasUsed)
   .toString()
   .split('')  
@@ -61,5 +62,14 @@ const main = async () => {
     } ,'').split('').reverse().join(''));
     console.log('GAS ', res.cumulativeGasUsed.toString());
   }
+  return {
+    deploy: gasPrice.mul(receipt.cumulativeGasUsed).div(10 ** 4).toString(),
+    total: gasPrice.mul(res.cumulativeGasUsed * address + ).div(10 ** 4).toString(),
+  }
 }
-main()
+const wrap = async () => {
+  for(let i = 1; i < 30; i++) {
+    await main()
+  }
+
+}
